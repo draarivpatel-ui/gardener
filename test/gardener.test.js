@@ -500,3 +500,24 @@ test('the page loads Flisk Analytics in <head>', async () => {
   const head = html.slice(html.indexOf('<head>'), html.indexOf('</head>'));
   expect(head).toContain('<script defer data-domain="gardener.flisk.si" src="https://flisk.sh/a.js"></script>');
 });
+
+test('an unknown browser page keeps the shared header and offers a way home', async () => {
+  const response = await worker.fetch(new Request('https://g.example/nope', {
+    headers: { accept: 'text/html,application/xhtml+xml,*/*;q=0.8' },
+  }));
+  expect(response.status).toBe(404);
+  expect(response.headers.get('content-type')).toBe('text/html; charset=utf-8');
+  expect(response.headers.get('vary')).toBe('Accept');
+  const body = await response.text();
+  expect(body).toContain('<header class="top stage">');
+  expect(body).toContain('href="/">Back to Gardener</a>');
+});
+
+test('unknown paths still return plain errors when HTML is not accepted', async () => {
+  for (const accept of ['application/json', '*/*', 'text/html;q=0,*/*;q=0.8']) {
+    const response = await worker.fetch(new Request('https://g.example/nope', { headers: { accept } }));
+    expect(response.status).toBe(404);
+    expect(response.headers.get('content-type')).toBe('text/plain; charset=utf-8');
+    expect(await response.text()).toBe('not found');
+  }
+});

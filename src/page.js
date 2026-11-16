@@ -93,6 +93,18 @@ ${error ? `<p class="error" role="alert">${esc(error)}</p>` : ''}${form(value)}
   });
 }
 
+export function notFoundPage(origin, path) {
+  return layout({
+    title: 'Page not found · Gardener',
+    origin,
+    path,
+    body: `<main><section class="hero stage"><div class="wrap">
+<h1 class="grad">Page not found</h1>
+<a class="btn" href="/">Back to Gardener</a>
+</div></section></main>`,
+  });
+}
+
 export function resultPage(origin, repo, version = '') {
   const u = `${origin}/${repo}.svg`;
   const snippet = `<p align="center"><img src="${u}" alt="Dependency tower of ${repo}" width="100%"></p>`;

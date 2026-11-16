@@ -2,7 +2,7 @@ import { loadFacts, validRepo } from './github.js';
 import { askWolf, buildMessages, fallbackTower, mergeTower, parseTower } from './wolf.js';
 import { renderTower } from './tower.js';
 import { parseRepoInput } from './repo-input.js';
-import { ICON, page, resultPage } from './page.js';
+import { ICON, notFoundPage, page, resultPage } from './page.js';
 import SAMPLE from './sample.js';
 
 // Bump when the prompt or the drawing changes: it is part of the cache key, so old towers are not served for a week.
@@ -160,7 +160,19 @@ export default {
     }
 
     const m = url.pathname.match(/^\/([^/]+)\/([^/]+?)(?:\.(svg|json))?$/);
-    if (!m || !get) return text('not found', 404);
+    if (!m || !get) {
+      const accept = request.headers.get('accept') || '';
+      const acceptsHtml = accept.split(',').some((range) => {
+        const [type, ...params] = range.toLowerCase().split(';').map((part) => part.trim());
+        return type === 'text/html' && !params.some((param) => /^q\s*=\s*0(?:\.0*)?$/.test(param));
+      });
+      const head = request.method === 'HEAD';
+      const response = get && acceptsHtml
+        ? html(head ? null : notFoundPage(origin, url.pathname), 404)
+        : text(head ? null : 'not found', 404);
+      response.headers.set('vary', 'Accept');
+      return response;
+    }
     const [, owner, repo, ext] = m;
     if (!validRepo(owner, repo)) return text('not a GitHub repo name', 400);
     const full = `${owner}/${repo}`;
