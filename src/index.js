@@ -4,6 +4,7 @@ import { renderTower } from './tower.js';
 import { parseRepoInput } from './repo-input.js';
 import { ICON, notFoundPage, page, resultPage } from './page.js';
 import SAMPLE from './sample.js';
+import { withSecurityHeaders } from './security-headers.js';
 
 // Bump when the prompt or the drawing changes: it is part of the cache key, so old towers are not served for a week.
 export const VERSION = 'v15';
@@ -130,7 +131,7 @@ const html = (body, status = 200) => new Response(body, { status, headers: { 'co
 export const ROBOTS = 'User-agent: *\nAllow: /$\nDisallow: /\n\nSitemap: https://gardener.flisk.si/sitemap.xml\n';
 export const SITEMAP = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://gardener.flisk.si/</loc></url></urlset>\n';
 
-export default {
+const app = {
   async fetch(request, env = {}, ctx = { waitUntil() {} }) {
     const url = new URL(request.url);
     const origin = env.PUBLIC_ORIGIN || url.origin;
@@ -205,3 +206,6 @@ export default {
     return svgResponse(grown.entry);
   },
 };
+
+// Every response of this Worker carries the baseline security headers (see security-headers.js).
+export default { fetch: async (...args) => withSecurityHeaders(await app.fetch(...args)) };
