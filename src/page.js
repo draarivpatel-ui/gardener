@@ -77,7 +77,7 @@ export function page(origin, { error = '', value = '' } = {}) {
     origin,
     body: `<main><section class="hero stage"><div class="wrap">
 <h1 class="grad">Grow a dependency tower from any repo</h1>
-<p class="lede">Paste a GitHub repo. Gardener counts its parts, asks the Wolf model to label the tower, and draws the meme: everything that holds everything up, and the one thing that is holding on by a thread.</p>
+<p class="lede">Paste a GitHub repo. Gardener draws a meme tower of everything it depends on, and marks the one part holding on by a thread.</p>
 ${error ? `<p class="error" role="alert">${esc(error)}</p>` : ''}${form(value)}
 <p class="reassure"><b>●</b> No sign-up · Public repos · Same repo, same tower</p>
 <div class="shot"><img src="/sample.svg" alt="Sample tower of the t3code repo" width="1080" height="1370"></div>
