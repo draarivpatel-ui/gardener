@@ -1,3 +1,4 @@
+import { traced } from './trace.js';
 import { loadFacts, validRepo } from './github.js';
 import { askWolf, buildMessages, fallbackTower, mergeTower, parseTower } from './wolf.js';
 import { renderTower } from './tower.js';
@@ -208,4 +209,4 @@ const app = {
 };
 
 // Every response of this Worker carries the baseline security headers (see security-headers.js).
-export default { fetch: async (...args) => withSecurityHeaders(await app.fetch(...args)) };
+export default { fetch: traced(async (...args) => withSecurityHeaders(await app.fetch(...args))) };
