@@ -24,5 +24,5 @@ if (built.error) {
   process.exit(1);
 }
 writeFileSync(out, renderTower(built.tower, { seed: target }));
-writeFileSync(out.replace(/\.svg$/, '.json'), JSON.stringify({ source: built.source, filled: built.filled, dropped: built.dropped, note: built.note, tower: built.tower, facts: built.facts }, null, 2));
+writeFileSync(`${out.replace(/\.svg$/, '')}.json`, JSON.stringify({ source: built.source, filled: built.filled, dropped: built.dropped, note: built.note, tower: built.tower, facts: built.facts }, null, 2));
 console.log(`${target}: ${built.source}; model filled ${built.filled} fields; dropped as ungrounded: ${built.dropped.length ? built.dropped.join(', ') : 'none'}; ${built.note ? `note: ${built.note}; ` : ''}${((Date.now() - t0) / 1000).toFixed(1)}s -> ${out}`);
